@@ -4,6 +4,23 @@ import { refs } from "./refs";
 import { getData } from "./api";
 import { renderButtonItems, renderCards } from "./template";
 
+const params = {
+  limit: 10,
+  skip: 1,
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    const intersecting = entry.isIntersecting;
+    if (intersecting) {
+      params.skip += params.limit;
+      onAddProdactsList();
+    }
+    // entry.target.style.backgroundColor = intersecting ? "blue" : "orange";
+    console.log(intersecting);
+  });
+});
+
 getData("products/categories").then(createButtonList).catch(console.log);
 
 function createButtonList(items) {
@@ -11,11 +28,17 @@ function createButtonList(items) {
   refs.listButton.insertAdjacentHTML("beforeend", buttonList);
 }
 
-getData("products").then(createCardList).catch(console.log);
+function onAddProdactsList() {
+  getData(`products?limit=${params.limit}&skip=${params.skip}`)
+    .then(createCardList)
+    .catch(console.log);
+}
+onAddProdactsList();
 
 function createCardList(products) {
   const cardList = renderCards(products);
   refs.listCard.insertAdjacentHTML("beforeend", cardList);
+  observer.observe(document.querySelector(".card:last-child"));
 }
 
 refs.listButton.addEventListener("click", onClickButton);
