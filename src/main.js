@@ -14,7 +14,7 @@ const observer = new IntersectionObserver((entries) => {
     const intersecting = entry.isIntersecting;
     if (intersecting) {
       params.skip += params.limit;
-      onAddProdactsList();
+      //   onAddProdactsList();
     }
     // entry.target.style.backgroundColor = intersecting ? "blue" : "orange";
     console.log(intersecting);
@@ -56,4 +56,16 @@ function onClickButton(event) {
 
   refs.listCard.innerHTML = "";
   getData(`products/category/${value}`).then(createCardList).catch(console.log);
+}
+
+refs.form.addEventListener("submit", onSumbitForm);
+
+function onSumbitForm(event) {
+  event.preventDefault();
+  const query = event.currentTarget.search.value.trim();
+  if (!query) {
+    return;
+  }
+  refs.listCard.innerHTML = "";
+  getData(`products/search?q=${query}`).then(createCardList).catch(console.log);
 }
